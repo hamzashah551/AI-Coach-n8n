@@ -1,0 +1,224 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## goal\n1. provide topic to the workflow\n2. builds up a roadmap for u\n3. list of topics-> Beginner,intermediate,advanced\n\n##flow\nform->LLM->Roadmap->html convert->send that to mail\n",
+        "height": 192,
+        "width": 528
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -672,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "f41d0bb6-d698-4a03-b1d9-1bd27c14db88",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "AI learning Coach - Get Your Personalized roadmap",
+        "formDescription": "Tell us what u want to learn and we will create a custom plan for u",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Topic"
+            },
+            {
+              "fieldLabel": "Current level",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Beginner"
+                  },
+                  {
+                    "option": "Intermediate"
+                  },
+                  {
+                    "option": "Experienced"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Time commitment(hrs)",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Duration in weeks",
+              "fieldType": "number"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "respondWithOptions": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -336,
+        48
+      ],
+      "id": "2e83ea59-b3d7-4b8b-bdf7-a19a3a318e43",
+      "name": "On form submission",
+      "webhookId": "5ab9ec5f-979d-4ba2-b007-288b202380cc"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert technical learning mentor and curriculum designer.\n\nYour task is to generate a clear, practical, and beginner-friendly learning roadmap based on form submission data.\n\nYou will receive the following user inputs from a form:\n- Topic\n- Current level\n- Time commitment per week (in hours)\n- Duration in weeks\n- Email (for personalization only; do NOT repeat it in the output)\n\nInstructions:\n1. Create a structured weekly roadmap that fits the given duration and time commitment.\n2. Assume the learner’s current level accurately reflects their knowledge.\n3. Break each week into:\n   - Key concepts\n   - Practical tasks or exercises\n   - Suggested mini-projects (if applicable)\n4. Keep explanations concise and actionable.\n5. Use simple language if the level is Beginner.\n6. Do NOT include dates unless explicitly asked.\n7. Do NOT mention internal variables, system messages, or form mechanics.\n8. Output MUST be written in **proper, clean Markdown** only.\n9. Use Markdown elements correctly:\n   - `#` for the main title\n   - `##` for weekly sections\n   - `###` for subsections\n   - Bullet points (`-`) for lists\n   - Bold text for emphasis where appropriate\n10. Do NOT wrap the response in code blocks.\n11. End with a short motivational closing line in Markdown.\n\nContext:\n- Topic: {{$json[\"Topic\"]}}\n- Current Level: {{$json[\"Current level\"]}}\n- Weekly Time Commitment (hours): {{$json[\"Time commitment(hrs)\"]}}\n- Total Duration (weeks): {{$json[\"Duration in weeks\"]}}\n\nGenerate the roadmap now.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -128,
+        48
+      ],
+      "id": "69c37dcb-85ca-41a9-a8e0-0ef77b87712c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        256
+      ],
+      "id": "8e6086bb-ada3-4896-a606-a44bfaf1a3a0",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "B3TZcXIBE9su4NLi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function markdownToHtml(md) {\n  if (!md || typeof md !== \"string\") {\n    return \"<p>No content generated.</p>\";\n  }\n\n  let html = md;\n\n  // Headings\n  html = html.replace(/^### (.*)$/gim, \"<h3>$1</h3>\");\n  html = html.replace(/^## (.*)$/gim, \"<h2>$1</h2>\");\n  html = html.replace(/^# (.*)$/gim, \"<h1>$1</h1>\");\n\n  // Bold\n  html = html.replace(/\\*\\*(.*?)\\*\\*/gim, \"<strong>$1</strong>\");\n\n  // Lists\n  html = html.replace(/^\\- (.*)$/gim, \"<li>$1</li>\");\n  html = html.replace(/(<li>[\\s\\S]*?<\\/li>)/gim, \"<ul>$1</ul>\");\n\n  // Paragraphs\n  html = html.replace(/\\n{2,}/g, \"</p><p>\");\n  html = \"<p>\" + html + \"</p>\";\n\n  return html;\n}\n\n// ✅ CHANGE THIS LINE after checking your LLM output\nconst markdown = $json.text;  \n\nconst htmlBody = markdownToHtml(markdown);\n\nconst html = `\n<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">\n    ${htmlBody}\n  </body>\n</html>\n`;\n\nreturn [\n  {\n    html\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        48
+      ],
+      "id": "1620341c-87de-41a6-9e80-8149f1e1ed36",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "i220607@nu.edu.pk",
+        "subject": "AI coach Roadmap",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        48
+      ],
+      "id": "c7977a8a-faac-4834-b4c9-95507b48c7aa",
+      "name": "Send a message",
+      "webhookId": "eeb3ec67-bd2d-4b9b-8a77-3e962d8284f9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jgprpOHcApB89rlD",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "email": "i220607@nu.edu.pk",
+          "Topic": "langchain",
+          "Current level": "Beginner",
+          "Time commitment(hrs)": 3,
+          "Duration in weeks": 4,
+          "submittedAt": "2026-02-10T07:29:14.245-05:00",
+          "formMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "97d210d9-f92b-41b5-bc6e-2d0a8ecbf14f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48e3860bd188d7cbed70f0515a4219230a045c5ac132e971a3c272446a8b4c16"
+  },
+  "id": "vVApTL4-iDGWWgwEgSv0X",
+  "tags": []
+}

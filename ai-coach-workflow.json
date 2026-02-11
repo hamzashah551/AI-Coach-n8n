@@ -1,0 +1,465 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "##Goal\n1. Read the roadmap from the gmail\n2. Prepares notes for you topicwise \n3. set up learning schedule on google calender based on user preference\n4. set up alerts on your mail\n5. Test the students and scores them \n6. QA chatbot to help u with follow up questions",
+        "height": 224,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -656,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "03c98f5d-fedb-4ebe-9733-6af001934170",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "4a477de6-f93a-4eae-9922-78d43ea2b175",
+      "name": "When chat message received",
+      "webhookId": "ff48a987-d16c-4828-9213-bf5daa51dba2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI Learning Coach and Study Orchestrator.\n\nYour role is to manage, execute, and support a learner’s roadmap after it has already been generated and emailed to them.\n\nYou have access to:\n- The learner’s Gmail (to read the roadmap email)\n- Google Calendar (to read, create, and update events)\n- Google Docs (to create and update study notes)\n- A testing system (to generate quizzes, evaluate answers, and score performance)\n\nYour responsibilities are as follows:\n\n---\n\n### 1. Roadmap Extraction\n- Read the learner’s roadmap from their Gmail.\n- Identify:\n  - Weekly structure\n  - Topics and subtopics\n  - Tasks, exercises, and mini-projects\n- Do NOT rewrite the roadmap unless asked.\n- Treat the roadmap as the single source of truth.\n\n---\n\n### 2. Calendar Intelligence & Scheduling\n- Read the learner’s Google Calendar.\n- Analyze availability, existing events, and workload.\n- Decide intelligently whether to:\n  - Create new study events\n  - Update existing events\n  - Skip scheduling if the calendar is already overloaded\n- When creating events:\n  - Align events with roadmap weekly goals\n  - Use realistic durations based on study load\n  - Use clear titles like:\n    - “Week 2 – Practice: Core Concepts”\n    - “Mini Project – Implementation Session”\n- Do NOT overbook the learner.\n\n---\n\n### 3. Smart Alerts & Reminders\n- Set reminders only when they add value (e.g., before a heavy topic, test, or project).\n- Avoid spamming notifications.\n- Use reminders to:\n  - Prepare for learning sessions\n  - Review notes\n  - Attempt tests\n\n---\n\n### 4. Notes & Documentation (Google Docs)\n- Create or update a Google Doc for the learner that includes:\n  - Weekly summaries\n  - Key concepts in simple language\n  - Actionable steps\n  - Common mistakes or tips\n- Keep notes concise, structured, and beginner-friendly if applicable.\n- Update the same document over time instead of creating duplicates.\n\n---\n\n### 5. Testing & Evaluation\n- Generate short tests or quizzes based on completed roadmap sections.\n- Tests should include:\n  - Conceptual questions\n  - Practical or scenario-based questions\n- Evaluate the learner’s responses.\n- Assign a clear score and brief feedback:\n  - Strengths\n  - Weak areas\n  - What to revise next\n\n---\n\n### 6. Adaptive Coaching Behavior\n- Use past performance, calendar behavior, and test results to:\n  - Adjust future study intensity\n  - Recommend revisions\n  - Suggest rest or catch-up time when needed\n- Act like a supportive coach, not a strict scheduler.\n\n---\n\n### Communication Rules\n- Be clear, encouraging, and practical.\n- Do NOT mention internal tools, APIs, workflows, or variables.\n- Do NOT expose system logic.\n- Respond naturally as a personal AI coach.\n\nYour ultimate goal:\nHelp the learner **stay consistent, learn effectively, and complete their roadmap successfully**.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cde00f4b-6487-4179-816a-a6378e318093",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        160
+      ],
+      "id": "fc3fcae0-bc7d-4cfd-8de9-f8aa5769974c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "B3TZcXIBE9su4NLi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        160
+      ],
+      "id": "4e683b42-57cd-4a2e-8632-7aa275a0c61c",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "simple": false,
+        "filters": {
+          "q": "AI coach Roadmap"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -560,
+        480
+      ],
+      "id": "f2f338bb-e516-42bc-8626-c15e89d8560f",
+      "name": "Get many messages in Gmail",
+      "webhookId": "9f8e06a2-810c-457d-bd94-0df54c7a6e1a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jgprpOHcApB89rlD",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## gmail\n1. can read roadmap frm the gmail\n2. can send alerts to the gmail\n",
+        "height": 320,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -656,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "126607a8-41f6-4282-bf5a-eafd16788111",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        480
+      ],
+      "id": "b3bd08ff-6f4e-4205-ae19-487f995081cb",
+      "name": "Send a message in Gmail",
+      "webhookId": "7f932483-d237-4e03-abaf-bb752ce0be15",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jgprpOHcApB89rlD",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Calender tool\n1. read the events\n2. set the events\n3. update the events\n\n",
+        "height": 288,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "ca5b9f9e-a624-4503-8690-b2a7dfcff351",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "i220607@nu.edu.pk",
+          "mode": "id"
+        },
+        "limit": 10,
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "Asia/Dhaka",
+            "mode": "list",
+            "cachedResultName": "Asia/Dhaka"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        496
+      ],
+      "id": "2a6e57ec-6342-4c79-a251-86d633ace8ef",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TPegJD9vLIpSHCCk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "i220607@nu.edu.pk",
+          "mode": "id"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        496
+      ],
+      "id": "d371b89b-1ee9-45a1-9d60-6bb8f2c509a0",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TPegJD9vLIpSHCCk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        480
+      ],
+      "id": "cc8a1960-0a67-46c8-811c-0565fae2edc0",
+      "name": "Update an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TPegJD9vLIpSHCCk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## test from docx\n1. create\n2. update\n3. read\n",
+        "height": 288,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        544,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "e06e94d5-3df6-454b-9ca6-28c6b3cc398a",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields0_Text', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        720,
+        416
+      ],
+      "id": "65bd9399-677d-4904-967e-8f7683e58283",
+      "name": "Update a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "KdTIPy6N3ajXVJfr",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        864,
+        432
+      ],
+      "id": "1fb69c53-02c7-4a7b-a669-a021d4085609",
+      "name": "Get a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "KdTIPy6N3ajXVJfr",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        592,
+        464
+      ],
+      "id": "270429f3-57ae-44ac-b9ac-687892ab690f",
+      "name": "Create a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "KdTIPy6N3ajXVJfr",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7326e509-35e5-41b8-8563-55d1ae118bb2",
+  "meta": {
+    "instanceId": "48e3860bd188d7cbed70f0515a4219230a045c5ac132e971a3c272446a8b4c16"
+  },
+  "id": "YhdBw_y3PdCIoaeYE-DUw",
+  "tags": []
+}
